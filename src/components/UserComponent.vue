@@ -11,7 +11,8 @@
                     <path d="M0 0h24v24H0V0z" fill="none"/>
                     <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                 </svg>
-                <input type='text' placeholder="Buscar persona" v-model="search" v-on:keyup.enter="setSearch"
+                <input type='text' placeholder="Buscar persona" id="search" v-model="search"
+                       v-on:keyup.enter="setSearch"
                        class="w-full -ml-8 pl-10 px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-white"/>
 
             </div>
@@ -289,6 +290,7 @@
                 links: [],
                 users: [],
                 search: '',
+                filterDate: '',
                 input: {
                     full_name: '',
                     lastName: '',
@@ -309,8 +311,12 @@
                 this.show = false;
             },
             getPage() {
-                const search = this.search.length != 0 ? '&search=' + this.search : '';
-                const uri = url + `/users?page=${this.page}${search}`;
+                const re = /^(?:(?:(?:0?[1-9]|1\d|2[0-8])[/-](?:0?[1-9]|1[0-2])|(?:29|30)[/-](?:0?[13-9]|1[0-2])|31[/](?:0?[13578]|1[02]))[/-](?:0{2,3}[1-9]|0{1,2}[1-9]\d|0?[1-9]\d{2}|[1-9]\d{3})|29[/-]0?2[/-](?:\d{1,2}(?:0[48]|[2468][048]|[13579][26])|(?:0?[48]|[13579][26]|[2468][048])00))$/;
+
+                const search = this.search.length !== 0 && !re.test(this.search) ? '&search=' + this.search : '';
+                const filterDate = this.filterDate.length !== 0 ? '&date=' + this.filterDate : '';
+
+                const uri = url + `/users?page=${this.page}${search}${filterDate}`;
                 this.loading = true;
                 axios.get(uri).then((result) => {
                     console.log(result.data);
@@ -323,8 +329,13 @@
                 });
             },
             getPageByUrl(args) {
-                const search = this.search.length != 0 ? '&search=' + this.search : '';
-                const uri = args + `${search}`;
+
+                const re = /^(?:(?:(?:0?[1-9]|1\d|2[0-8])[/-](?:0?[1-9]|1[0-2])|(?:29|30)[/-](?:0?[13-9]|1[0-2])|31[/](?:0?[13578]|1[02]))[/-](?:0{2,3}[1-9]|0{1,2}[1-9]\d|0?[1-9]\d{2}|[1-9]\d{3})|29[/-]0?2[/-](?:\d{1,2}(?:0[48]|[2468][048]|[13579][26])|(?:0?[48]|[13579][26]|[2468][048])00))$/;
+
+                const search = this.search.length !== 0 && !re.test(this.search) ? '&search=' + this.search : '';
+                const filterDate = this.filterDate.length !== 0 ? '&date=' + this.filterDate : '';
+
+                const uri = args + `${search}` + filterDate;
                 this.loading = true;
                 axios.get(uri).then((result) => {
                     console.log(result.data);
@@ -337,6 +348,18 @@
                 });
             },
             setSearch() {
+                const re = /^(?:(?:(?:0?[1-9]|1\d|2[0-8])[/-](?:0?[1-9]|1[0-2])|(?:29|30)[/-](?:0?[13-9]|1[0-2])|31[/](?:0?[13578]|1[02]))[/-](?:0{2,3}[1-9]|0{1,2}[1-9]\d|0?[1-9]\d{2}|[1-9]\d{3})|29[/-]0?2[/-](?:\d{1,2}(?:0[48]|[2468][048]|[13579][26])|(?:0?[48]|[13579][26]|[2468][048])00))$/;
+
+                const args = this.search;
+                if (re.test(args)) {
+                    console.log('esta es');
+                    this.filterDate = args;
+                    // this.search = '';
+                    document.querySelector('#search').value = this.filterDate;
+                } else {
+                    console.log('no esta');
+                    this.filterDate = '';
+                }
                 this.getPage();
             },
             linkPages(args) {
