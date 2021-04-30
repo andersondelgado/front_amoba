@@ -32,6 +32,9 @@
             </div>
 
             <div v-if="!loading">
+                <div v-if="users.length===0" class="bg-white px-4 py-4 flex my-2 rounded-lg shadow">
+                    No hay información para mostrar ...
+                </div>
                 <div class="bg-white px-4 py-4 flex my-2 rounded-lg shadow" v-for="i in users" v-bind:key="i.id">
                     <div class="w-24 pr-5">
                         <a href="#" class="mb-4">
@@ -47,13 +50,15 @@
                         <p class="text-base font-bold" v-bind:id="'info_fullname_'+i.id">
                             {{i.first_name}}
                         </p>
-                        <input style="display: none" class="border-2 rounded px-3 py-2 w-full focus:outline-none focus:border-blue-400 focus:shadow"
+                        <input style="display: none"
+                               class="border-2 rounded px-3 py-2 w-full focus:outline-none focus:border-blue-400 focus:shadow"
                                type="text" v-bind:id="'fullname_'+i.id">
                         <p class="text-sm" v-on:click="deleteUser(i.id)">Eliminar</p>
                     </div>
                     <div class="w-4/5 pr-5">
                         <p class="text-left" v-bind:id="'info_description_'+i.id">{{i.description}}</p>
-                        <textarea style="display: none" class="border-2 rounded px-3 py-2 w-full focus:outline-none focus:border-blue-400 focus:shadow"
+                        <textarea style="display: none"
+                                  class="border-2 rounded px-3 py-2 w-full focus:outline-none focus:border-blue-400 focus:shadow"
                                   v-bind:id="'description_'+i.id"></textarea>
                     </div>
                     <div class="pr-2">
@@ -346,25 +351,14 @@
                 if (id !== null) {
                     // const tg0 = "info_fullname_" + id;
                     const tg = "fullname_" + this.ID;
-
-                    // const tgx0 = "info_description_" + this.ID;
                     const tgx = "description_" + this.ID;
                     this.input.full_name = document.querySelector('#' + tg).value;
                     this.input.description = document.querySelector('#' + tgx).value;
                     this.file = null;
                 }
 
-                // if (this.input.full_name.includes(" ")) {
-                //     firstName = this.input.full_name.split(' ')[0];
-                //     lastName = this.input.full_name.split(' ')[1];
-                // } else {
-                //     firstName = this.input.full_name;
-                //     lastName = this.input.lastName;
-                // }
-
                 firstName = this.input.full_name;
                 lastName = this.input.lastName;
-
 
                 let formData = new FormData();
                 formData.append('first_name', firstName);
@@ -426,21 +420,17 @@
                 document.querySelector('#' + tgx).style.display = "block";
                 console.log(document.querySelector('#' + tg));
                 const uri = url + `/users/${id}`;
-                this.isEdit=false;
+                this.isEdit = false;
 
                 axios.get(uri).then((result) => {
                     // this.loading=false;
-                    this.isEdit=true;
+                    this.isEdit = true;
                     let data = result?.data;
-                    // document.querySelector('#' + tg).value = data.first_name + ' ' + data.last_name;
                     document.querySelector('#' + tg).value = data.first_name;
                     document.querySelector('#' + tgx).value = data.description;
                     this.input.lastName = data.last_name;
-                    // this.input.description = document.querySelector('#' + tgx).value;
                 });
 
-                // this.input.full_name = document.querySelector('#' + tg).value;
-                // this.input.description = document.querySelector('#' + tgx).value;
             },
             handleImage(e) {
                 const selectFile = e.target.files[0];
@@ -525,46 +515,3 @@
         margin-bottom: 1rem;
     }
 </style>
-<!--<style lang="sass">-->
-<!--    ul-->
-<!--        list-style-type: none-->
-<!--        padding: 0-->
-
-<!--        li-->
-<!--            display: inline-block-->
-<!--            margin: 0 10px-->
-
-<!--        .paginate-list-->
-<!--            width: 159px-->
-<!--            margin: 0 auto-->
-<!--            text-align: left-->
-
-<!--            li-->
-<!--                display: block-->
-
-<!--                &:before-->
-<!--                    content: '⚬ '-->
-<!--                    font-weight: bold-->
-<!--                    color: slategray-->
-
-<!--        .paginate-links.items-->
-<!--            user-select: none-->
-
-<!--            a-->
-<!--                cursor: pointer-->
-
-<!--            li.active a-->
-<!--                font-weight: bold-->
-
-<!--            li.next:before-->
-<!--                content: ' | '-->
-<!--                margin-right: 13px-->
-<!--                color: #ddd-->
-
-<!--            li.disabled a-->
-<!--                color: #ccc-->
-<!--                cursor: no-drop-->
-
-<!--        a-->
-<!--            color: #42b983-->
-<!--</style>-->
