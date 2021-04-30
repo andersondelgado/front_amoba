@@ -2,7 +2,8 @@
 node_modules
 /dist
 
-
+/electron
+/android
 # local env files
 .env.local
 .env.*.local
